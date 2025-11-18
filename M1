@@ -1,0 +1,905 @@
+Sub CIQ_Data_Map(SiteNM)
+Dim oFSO, oFolder, oFiles, oFile, inputFileName, tempStr, tempArray, inputFileName1
+Dim fileCount, xlsxFileCount, additionalFileIndex As Integer
+Dim moranStr, moranStr1, GPS1 As String
+Dim strSearch As String
+Dim SATStr1, SATStr2, SATStr3, SATStr4, SATStr5, SATStr6, SATStr7, SATStr8, SATStr9 As String
+Dim siteType, grpSearch As String
+Dim currentDir, mrbtsID As String
+Dim inputWb, inputWb1, tempWB As Workbook
+Dim inputWs, tempSheet As Worksheet
+Dim inputWs1 As Worksheet
+Dim macrowb As Workbook
+Dim macroWs, ws As Worksheet
+Dim ws1 As Worksheet
+Dim TempStr_TD As String
+tempStr = ""
+mrbtsID = ""
+Set oFSO = CreateObject("Scripting.FileSystemObject")
+currentDir = Application.ActiveWorkbook.Path
+Set oFolder = oFSO.GetFolder(currentDir & "\Raw")
+
+fileCount = 0
+xlsxFileCount = 0
+'Get input file into workbook
+inputFileName = ""
+inputFileName1 = ""
+
+    Set oFiles = oFolder.Files
+    fileCount = oFiles.count
+    
+    For Each oFile In oFiles
+            tempName = oFile.Name
+                                           
+            If (InStr(Right(tempName, 5), ".xlsx") > 0) Then
+                xlsxFileCount = xlsxFileCount + 1
+                inputFileName = tempName
+             
+            End If
+            
+    Next
+    
+    If xlsxFileCount = 0 Then
+        MsgBox "Please make sure Input file is present in the folder " & oFolder
+        Exit Sub
+    ElseIf xlsxFileCount = 1 Then
+       Set inputWb = Workbooks.Open(currentDir & "/Raw/" & inputFileName)
+        Set macrowb = ThisWorkbook
+        tempArray = Split(inputFileName, "_")
+        Set inputWs = inputWb.Sheets("Site")
+        strSearch = inputWs.Cells(2, 19).Value
+        Set macroWs = macrowb.Sheets("TestData")
+        moranStr = macroWs.Cells(2, 1).Value
+        moranStr1 = macroWs.Cells(9, 1).Value
+        GPS1 = macroWs.Cells(4, 1).Value
+        Set macroWs = macrowb.Sheets("site")
+        mrbtsID = inputWs.Cells(2, 15).Value
+        macroWs.Cells(2, 1).Value = "MRBTS_" & mrbtsID
+        macroWs.Cells(2, 2).Value = inputWs.Cells(4, 38).Value
+        If inputWs.Cells(4, 46).Value = "KM-LEM52" Then
+            macroWs.Cells(2, 2).Value = "LEM_52"
+            ElseIf inputWs.Cells(4, 46).Value = "KM-LEM53" Then
+            macroWs.Cells(2, 2).Value = "LEM_53"
+            ElseIf inputWs.Cells(4, 46).Value = "KM-LEM54" Then
+            macroWs.Cells(2, 2).Value = "LEM_54"
+            Else
+            macroWs.Cells(2, 2).Value = inputWs.Cells(4, 38).Value
+        End If
+        macroWs.Cells(2, 4).Value = inputWs.Cells(4, 14).Value
+        If inputWs.Cells(4, 41).Value = "-" Then
+        Else
+        macroWs.Cells(2, 6).Value = inputWs.Cells(4, 14).Value
+        End If
+        
+        macroWs.Cells(2, 5).Value = "25R1"
+        
+        Set macroWs = macrowb.Sheets("srbts")
+        macroWs.Cells(2, 1).Value = "MRBTS_" & inputWs.Cells(4, 16).Value
+        macroWs.Cells(2, 2).Value = inputWs.Cells(4, 16).Value
+        
+        macroWs.Cells(2, 6).Value = inputWs.Cells(4, 19).Value
+        macroWs.Cells(2, 8).Value = inputWs.Cells(4, 23).Value
+        macroWs.Cells(2, 9).Value = ""
+        tempStr = inputWs.Cells(4, 22).Value
+        tempLength = Len(tempStr)
+        macroWs.Cells(2, 7).Value = Mid(tempStr, InStr(1, tempStr, "(", vbTextCompare) + 1, tempLength - InStr(1, tempStr, "(", vbTextCompare) - 1)
+        tempStr = macroWs.Cells(2, 7).Value
+        Set macroWs = macrowb.Sheets("nrcel")
+        macroWs.Cells(2, 2).Value = "MRBTS_" & mrbtsID
+        macroWs.Cells(2, 3).Value = mrbtsID
+        If InStr(tempStr, "ASIB") > 0 Then
+            macroWs.Cells(2, 6).Value = "N700"
+            macroWs.Cells(2, 8).Value = "10"
+            macroWs.Cells(2, 9).Value = "43"
+        Else
+            macroWs.Cells(2, 6).Value = "N3700"
+            macroWs.Cells(2, 8).Value = "100"
+            macroWs.Cells(2, 9).Value = "40"
+        
+        End If
+        
+        
+        Set macroWs = macrowb.Sheets("nrbts")
+        macroWs.Cells(2, 1).Value = "MRBTS_" & inputWs.Cells(4, 13).Value
+        macroWs.Cells(2, 2).Value = inputWs.Cells(4, 13).Value
+        macroWs.Cells(2, 3).Value = inputWs.Cells(4, 13).Value
+        macroWs.Cells(2, 4).Value = inputWs.Cells(4, 15).Value
+        macroWs.Cells(2, 5).Value = inputWs.Cells(4, 30).Value
+        macroWs.Cells(2, 7).Value = inputWs.Cells(4, 31).Value
+        macroWs.Cells(2, 10).Value = inputWs.Cells(4, 33).Value
+        macroWs.Cells(2, 12).Value = Mid(inputWs.Cells(4, 32).Value, 2)
+        macroWs.Cells(2, 6).Value = inputWs.Cells(4, 36).Value
+        macroWs.Cells(2, 8).Value = inputWs.Cells(4, 37).Value
+        macroWs.Cells(2, 11).Value = inputWs.Cells(4, 39).Value
+        macroWs.Cells(2, 13).Value = Mid(inputWs.Cells(4, 38).Value, 2)
+        If InStr(inputWs.Cells(4, 26).Value, "BH_PTP") > 0 Then
+            macroWs.Cells(2, 14).Value = Mid(inputWs.Cells(4, 26).Value, 1, 6)
+        ElseIf inputWs.Cells(4, 26).Value = "BCSW" Then
+            macroWs.Cells(2, 14).Value = "BCSW"
+        ElseIf inputWs.Cells(4, 26).Value = moranStr1 Then
+            macroWs.Cells(2, 14).Value = "Common card"
+        ElseIf inputWs.Cells(4, 26).Value = moranStr Then
+            macroWs.Cells(2, 14).Value = ""
+        Else
+            macroWs.Cells(2, 14).Value = "TRUE"
+        End If
+        
+        macroWs.Cells(2, 9).Value = inputWs.Cells(4, 43).Value
+        macroWs.Cells(2, 16).Value = inputWs.Cells(4, 28).Value
+        
+        If inputWs.Cells(4, 29).Value = "Ether(Opt)" Then
+            macroWs.Cells(2, 17).Value = "Ether(OPT)"
+        Else
+           macroWs.Cells(2, 17).Value = inputWs.Cells(4, 29).Value
+        End If
+                
+         Set macroWs = macrowb.Sheets("nrcel_Additional")
+        additionalFileIndex = 1
+        Dim siteList As Collection
+        Set siteList = New Collection
+        Dim siteOrder As Collection
+        Set siteOrder = New Collection
+        Dim orderedSiteList As Collection
+        Set orderedSiteList = New Collection
+        Dim siteSheetMap
+        Set siteSheetMap = CreateObject("Scripting.Dictionary")
+        
+        siteOrder.Add ("3.5G")
+        siteOrder.Add ("3.7G")
+        siteOrder.Add ("4.0G")
+        siteOrder.Add ("700M")
+        siteOrder.Add ("28G")
+        siteOrder.Add ("2.3G")
+        siteOrder.Add ("1.7G")
+        
+        For Each ws In inputWb.Worksheets
+            If InStr(ws.Name, "Cell_Info") > 0 Then
+                RowCount = 0
+                RowCount = ws.Cells(Rows.count, "A").End(xlUp).Row
+                If RowCount > 3 Then
+                    siteList.Add (ws.Name)
+                End If
+               
+            End If
+        Next ws
+        
+        For Each sheetName In siteList
+           Set ws = inputWb.Sheets(sheetName)
+            RowCount = 0
+            RowCount = ws.Cells(Rows.count, "A").End(xlUp).Row
+            Dim Uniques As Collection
+            Set Uniques = GetUniqueValues(ws.Range("G4:G" & RowCount).Value)
+            If Uniques.count > 1 Then
+                siteType = "CRAN"
+                Exit For
+            Else
+                siteType = "DRAN"
+            End If
+            
+        Next sheetName
+        If InStr(siteType, "CRAN") Then
+            Set oFolder = oFSO.GetFolder(currentDir & "/TD_File/")
+            Set oFiles = oFolder.Files
+            fileCount = oFiles.count
+            For Each oFile In oFiles
+                tempName = oFile.Name
+                                
+                 If (InStr(Left(tempName, 7), "KTC-Lab") > 0) Then
+                    inputFileName1 = tempName
+                End If
+                
+            Next
+            Set inputWb1 = Workbooks.Open(currentDir & "/TD_File/" & inputFileName1)
+            
+            For Each ws1 In inputWb1.Worksheets
+                If InStr(ws1.Name, "SYNC") > 0 Then
+                    Set inputWs1 = inputWb1.Sheets(ws1.Name)
+                   Exit For
+                End If
+            Next ws1
+            For Each ws In macrowb.Worksheets
+                If ws.Name = "tempSheet" Then
+                Application.DisplayAlerts = False
+                Application.EnableEvents = False
+                macrowb.Sheets("tempSheet").Delete
+                Application.DisplayAlerts = True
+                Application.EnableEvents = True
+                End If
+            Next
+            
+            
+            startIndex = searchColumn(Trim(strSearch), inputWs1, 10, "down")
+            If startIndex <> 0 Then
+            grpSearch = inputWs1.Cells(startIndex, 12).Value
+            
+            End If
+            
+            startIndex = searchColumn(Trim(grpSearch), inputWs1, 12, "down")
+            endIndex = searchColumn(Trim(grpSearch), inputWs1, 12, "up")
+            
+            macrowb.Sheets.Add.Name = "tempSheet"
+            inputWs1.Range(Cells(startIndex, 10), Cells(endIndex, 15)).Copy
+            macrowb.Sheets("tempSheet").Cells(1, 1).PasteSpecial Paste:=xlPasteValues
+            'Workbooks.Close (currentDir & "/TD_File/" & inputFileName1)
+            Set tempSheet = macrowb.Sheets("tempSheet")
+            
+            tempStr = ""
+            
+            For rowNo = 1 To (endIndex - startIndex + 1)
+            tempSheet.Cells(rowNo, 4).NumberFormat = "@"
+               If (Trim(tempSheet.Cells(rowNo, 4).Value) = "") Then
+                tempSheet.Cells(rowNo, 4).Value = tempStr
+                tempSheet.Cells(rowNo, 4).NumberFormat = "@"
+               Else
+                tempStr = tempSheet.Cells(rowNo, 4).Value
+               End If
+        
+            Next rowNo
+           tempStr = ""
+            For rowNo = (endIndex - startIndex + 1) To 1 Step -1
+               If (Trim(tempSheet.Cells(rowNo, 4)) = "") Then
+                tempSheet.Cells(rowNo, 4).Value = tempStr
+                tempSheet.Cells(rowNo, 4).NumberFormat = "@"
+               Else
+                tempStr = tempSheet.Cells(rowNo, 4).Value
+               End If
+               
+            Next rowNo
+            
+            tempStr = ""
+            TempStr_TD = ""
+            
+            For rowNo = 1 To (endIndex - startIndex + 1)
+               If (Trim(tempSheet.Cells(rowNo, 6).Value) = "") Then
+                tempSheet.Cells(rowNo, 6).Value = 0
+               Else
+                tempStr = Left(tempSheet.Cells(rowNo, 6).Value, Len(tempSheet.Cells(rowNo, 6).Value) - 1)
+                tempSheet.Cells(rowNo, 6).Value = tempStr
+               End If
+               
+               If (Trim(tempSheet.Cells(rowNo, 1).Value) = "") Then
+                tempSheet.Cells(rowNo, 1).Value = "None"
+               End If
+               
+               tempSheet.Cells(rowNo, 7).Value = tempSheet.Cells(rowNo, 1).Value & "/" & tempSheet.Cells(rowNo, 2).Value & "/" & tempSheet.Cells(rowNo, 4).Value & "/" & tempSheet.Cells(rowNo, 6).Value
+            
+               If (InStr(Left(tempSheet.Cells(rowNo, 7).Value, 4), "BCSW") > 0) Then
+               
+                    TempStr_TD = ""
+                
+               Else
+               
+                    TempStr_TD = TempStr_TD & tempSheet.Cells(rowNo, 7).Value & vbLf
+                
+               End If
+
+            Next rowNo
+            
+               Set macroWs = macrowb.Sheets("srbts")
+               macroWs.Cells(2, 9).Value = TempStr_TD
+               
+        Else
+            Set macroWs = macrowb.Sheets("srbts")
+            macroWs.Cells(2, 9).Value = ""
+            'macroWs.Columns(9).Delete Shift:=xlShiftToLeft
+        End If
+        
+        
+        
+        
+        Set macroWs = macrowb.Sheets("site")
+        macroWs.Cells(2, 3).Value = "WAREHOUSE"
+        tempStr = "CIQ_kddi_" & mrbtsID & "_WH_" & Mid(tempArray(0), 5) & ".xlsx"
+        
+       Application.DisplayAlerts = False
+       Set tempWB = Workbooks.Add
+       ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel")).Copy _
+         After:=tempWB.Sheets(tempWB.Sheets.count)
+         
+         adasd = currentDir & "/Modified/" & SiteNM & "/" & tempStr
+         
+        tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+:=xlOpenXMLWorkbook, CreateBackup:=False
+        Set tempSheet = tempWB.Sheets("History_")
+        tempSheet.Buttons.Delete
+        tempWB.Sheets("Sheet1").Delete
+        tempWB.Close SaveChanges:=True
+        
+        macroWs.Cells(2, 3).Value = "BASE"
+        
+        tempStr = "CIQ_kddi_" & mrbtsID & "_BASE_" & Mid(tempArray(0), 5) & ".xlsx"
+       
+        Set tempWB = Workbooks.Add
+       ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel")).Copy _
+         After:=tempWB.Sheets(tempWB.Sheets.count)
+         
+         adasd = currentDir & "/Modified/" & SiteNM & "/" & tempStr
+         
+        tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+:=xlOpenXMLWorkbook, CreateBackup:=False
+        Set tempSheet = tempWB.Sheets("History_")
+        tempSheet.Buttons.Delete
+        tempWB.Sheets("Sheet1").Delete
+        tempWB.Close SaveChanges:=True
+        
+            Set macroWs = macrowb.Sheets("srbts")
+            macroWs.Cells(2, 4).Value = "TRUE"
+            macroWs.Cells(2, 5).Value = "FALSE"
+            Set macroWs = macrowb.Sheets("nrcel")
+            macroWs.Cells(2, 5).Value = "498"
+            macroWs.Cells(2, 7).Value = "998"
+         tempStr = "CIQ_kddi_" & mrbtsID & "_498ADD_" & Mid(tempArray(0), 5) & ".xlsx"
+            
+            Application.DisplayAlerts = False
+            Set tempWB = Workbooks.Add
+           ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel")).Copy _
+             After:=tempWB.Sheets(tempWB.Sheets.count)
+             
+             adasd = currentDir & "/Modified/" & SiteNM & "/" & tempStr
+             
+            tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+    :=xlOpenXMLWorkbook, CreateBackup:=False
+            Set tempSheet = tempWB.Sheets("History_")
+            tempSheet.Buttons.Delete
+            tempWB.Sheets("Sheet1").Delete
+            tempWB.Close SaveChanges:=True
+     
+        Set macroWs = macrowb.Sheets("srbts")
+        macroWs.Cells(2, 4).Value = "FALSE"
+        macroWs.Cells(2, 5).Value = "TRUE"
+        Set macroWs = macrowb.Sheets("nrcel")
+        macroWs.Cells(2, 5).Value = "498"
+        macroWs.Cells(2, 7).Value = "998"
+         tempStr = "CIQ_kddi_" & mrbtsID & "_499DEL_" & Mid(tempArray(0), 5) & ".xlsx"
+           
+            Set tempWB = Workbooks.Add
+           ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel")).Copy _
+             After:=tempWB.Sheets(tempWB.Sheets.count)
+             
+            tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+    :=xlOpenXMLWorkbook, CreateBackup:=False
+            Set tempSheet = tempWB.Sheets("History_")
+            tempSheet.Buttons.Delete
+            tempWB.Sheets("Sheet1").Delete
+            tempWB.Close SaveChanges:=True
+        
+        
+         Set macroWs = macrowb.Sheets("site")
+        macroWs.Cells(2, 3).Value = "PRODUCTION"
+        
+       Set macroWs = macrowb.Sheets("TestData")
+       
+       SATStr1 = macroWs.Cells(5, 1).Value
+       SATStr2 = macroWs.Cells(6, 1).Value
+       SATStr3 = macroWs.Cells(7, 1).Value
+       SATStr4 = macroWs.Cells(8, 1).Value
+       SATStr9 = macroWs.Cells(10, 1).Value
+       
+       SATStr5 = macroWs.Cells(5, 2).Value
+       SATStr6 = macroWs.Cells(6, 2).Value
+       SATStr7 = macroWs.Cells(7, 2).Value
+       SATStr8 = macroWs.Cells(8, 2).Value
+       
+       
+       Set macroWs = macrowb.Sheets("nrcel_Additional")
+        
+        If siteType = "CRAN" Then
+            For Each sheetName In siteList
+                Set ws = inputWb.Sheets(sheetName)
+                RowCount = 0
+                RowCount = ws.Cells(Rows.count, "A").End(xlUp).Row
+            
+                Set Uniques = GetUniqueValues(ws.Range("G4:G" & RowCount).Value)
+                For Each siteName In Uniques
+                    tempStr = Mid(sheetName, 11)
+                    tempStr = tempStr & "_" & siteName
+                   siteSheetMap.Add tempStr, sheetName
+                Next siteName
+                
+            Next sheetName
+        End If
+        
+        'RowCount = macroWs.Cells(Rows.count, "A").End(xlUp).Row
+        macroWs.Range("A2:AC9999").ClearContents
+        
+        subRowNo = 2
+        
+        If InStr(siteType, "DRAN") Then
+            For Each siteName In siteOrder
+                For Each tempName In siteList
+                    If InStr(tempName, siteName) > 0 Then
+                        orderedSiteList.Add (tempName)
+                    End If
+                Next tempName
+            Next siteName
+        
+            For Each sheetName In orderedSiteList
+               Set ws = inputWb.Sheets(sheetName)
+                RowCount = 0
+                RowCount = ws.Cells(Rows.count, "A").End(xlUp).Row
+                Set Uniques = GetUniqueValues(ws.Range("G4:G" & RowCount).Value)
+                
+                For index = 1 To Uniques.count
+                    For rowNo = 4 To RowCount
+                        If CStr(Uniques.Item(index)) = CStr(ws.Cells(rowNo, 7).Value) Then
+                            
+                            macroWs.Cells(subRowNo, 1).Value = "Addition"
+                            macroWs.Cells(subRowNo, 2).Value = "MRBTS_" & mrbtsID
+                            macroWs.Cells(subRowNo, 3).Value = mrbtsID
+                            macroWs.Cells(subRowNo, 4).Value = subRowNo - 1
+                            macroWs.Cells(subRowNo, 5).Value = ws.Cells(rowNo, 6).Value
+                            
+                            tempStr = ws.Cells(rowNo, 8).Value
+                            If (InStr(tempStr, "3.5G") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N3500"
+                            ElseIf (InStr(tempStr, "3.7G") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N3700"
+                            ElseIf (InStr(tempStr, "4.0G") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N4000"
+                            ElseIf (InStr(tempStr, "28G") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N257"
+                            ElseIf (InStr(tempStr, "700M") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N700"
+                            ElseIf (InStr(tempStr, "2.3G") > 0) Then
+                                macroWs.Cells(subRowNo, 6).Value = "N2300"
+                            End If
+                            
+                            If (InStr(tempStr, "40M") > 0) Then
+                                macroWs.Cells(subRowNo, 9).Value = "40"
+                            ElseIf (InStr(tempStr, "100M") > 0) Then
+                                macroWs.Cells(subRowNo, 9).Value = "100"
+                            ElseIf (InStr(tempStr, "10M") > 0) Then
+                                macroWs.Cells(subRowNo, 9).Value = "10"
+                            End If
+                            
+                            macroWs.Cells(subRowNo, 11).Value = 54
+                            macroWs.Cells(subRowNo, 12).Value = 440
+                            macroWs.Cells(subRowNo, 7).Value = ws.Cells(rowNo, 23).Value
+                            macroWs.Cells(subRowNo, 8).Value = ws.Cells(rowNo, 37).Value
+                            macroWs.Cells(subRowNo, 10).Value = ws.Cells(rowNo, 36).Value
+                            
+                            If ws.Cells(rowNo, 39).Value = "-" Then
+                            Else
+                            macroWs.Cells(subRowNo, 13).Value = ws.Cells(rowNo, 39).Value
+                            End If
+                            
+                            Dim SubUniques As Collection
+                            Set SubUniques = GetUniqueValues(ws.Range("AU" & rowNo & ":AZ" & rowNo).Value)
+                            tempStr = ""
+                            For SubIndex = 1 To ((SubUniques.count) - 1)
+                                If (SubUniques.Item(SubIndex) <> "") Then
+                                    tempStr = tempStr & SubUniques.Item(SubIndex) & "/"
+                                End If
+                            Next SubIndex
+                            
+                            If SubUniques.count <> 0 Then
+                                tempStr = tempStr & SubUniques.Item(SubUniques.count)
+                            End If
+                            If tempStr = "-" Then
+                               tempStr = ""
+                            End If
+                            macroWs.Cells(subRowNo, 14).Value = tempStr
+                            
+                            If macroWs.Cells(subRowNo, 6).Value = "N257" Then
+                                macroWs.Cells(subRowNo, 15).Value = "1.25"
+                            Else
+                                macroWs.Cells(subRowNo, 15).Value = ws.Cells(rowNo, 38).Value
+                            End If
+                            
+                            macroWs.Cells(subRowNo, 16).Value = ws.Cells(rowNo, 42).Value
+                            macroWs.Cells(subRowNo, 17).Value = ws.Cells(rowNo, 20).Value
+                            macroWs.Cells(subRowNo, 18).Value = ws.Cells(rowNo, 22).Value
+                            If ws.Cells(rowNo, 44).Value = "N/A" Then
+                                macroWs.Cells(subRowNo, 19).Value = ws.Cells(rowNo, 21).Value
+                            Else
+                                macroWs.Cells(subRowNo, 19).Value = ws.Cells(rowNo, 44).Value
+                            End If
+                            
+                            macroWs.Cells(subRowNo, 20).Value = ws.Cells(rowNo, 43).Value
+                            macroWs.Cells(subRowNo, 21).Value = ws.Cells(rowNo, 46).Value
+                            macroWs.Cells(subRowNo, 22).Value = ws.Cells(rowNo, 45).Value
+                            macroWs.Cells(subRowNo, 23).Value = ws.Cells(rowNo, 41).Value
+                            macroWs.Cells(subRowNo, 24).Value = ws.Cells(rowNo, 40).Value
+                            macroWs.Cells(subRowNo, 31).Value = ws.Cells(rowNo, 19).Value
+                            macroWs.Cells(subRowNo, 30).Value = ws.Cells(rowNo, 18).Value
+                            macroWs.Cells(subRowNo, 27).Value = ws.Cells(rowNo, 11).Value
+                            
+                            tempStr = ws.Cells(rowNo, 27).Value
+                            tempStr = RemoveWhiteSpace(tempStr)
+                            If tempStr = "" Then
+                            Else
+                            tempStr = Left(tempStr, Len(tempStr) - 1)
+                            macroWs.Cells(subRowNo, 29).Value = tempStr
+                            End If
+                            
+                            macroWs.Cells(subRowNo, 32).Value = ws.Cells(rowNo, 7).Value
+                            
+                    If ws.Cells(rowNo, 30).Value = SATStr9 Then
+                            macroWs.Cells(subRowNo, 33).Value = "standard"
+                    Else
+                            macroWs.Cells(subRowNo, 33).Value = ""
+                    End If
+                        
+                            If ws.Cells(rowNo, 25).Value = SATStr1 Then
+                                macroWs.Cells(subRowNo, 25).Value = SATStr5
+                            ElseIf ws.Cells(rowNo, 25).Value = SATStr2 Then
+                                macroWs.Cells(subRowNo, 25).Value = SATStr6
+                            ElseIf ws.Cells(rowNo, 25).Value = SATStr3 Then
+                                macroWs.Cells(subRowNo, 25).Value = SATStr7
+                            ElseIf ws.Cells(rowNo, 25).Value = SATStr4 Then
+                                macroWs.Cells(subRowNo, 25).Value = SATStr8
+                            Else
+                                macroWs.Cells(subRowNo, 25).Value = ""
+                            End If
+                                  
+                            Set SubUniques = GetUniqueValues(ws.Range("BB" & rowNo & ":BH" & rowNo).Value)
+                            tempStr = ""
+                            For SubIndex = 1 To ((SubUniques.count) - 1)
+                                If (SubUniques.Item(SubIndex) <> "") And (SubUniques.Item(SubIndex) <> "-") Then
+                                    tempStr = tempStr & SubUniques.Item(SubIndex) & "/"
+                                End If
+                            Next SubIndex
+                            
+                            If SubUniques.count <> 0 Then
+                                tempStr = tempStr & SubUniques.Item(SubUniques.count)
+                            End If
+                            
+                            If tempStr = "-" Then
+                               tempStr = ""
+                            End If
+                    
+                            
+                            macroWs.Cells(subRowNo, 26).Value = tempStr
+                            
+                            'macroWs.Cells(subRowNo, 28).Value = ws.Cells(rowNo, 11).Value
+                           
+                            If (moranStr = CStr(ws.Cells(rowNo, 26).Value)) Then
+                                macroWs.Cells(subRowNo, 28).Value = "FALSE"
+                            Else
+                                macroWs.Cells(subRowNo, 28).Value = "TRUE"
+                            End If
+                            
+                            tempStr = ws.Cells(rowNo, 27).Value
+                            tempStr = RemoveWhiteSpace(tempStr)
+                            If tempStr = "" Then
+                            
+                            Else
+                                tempStr = Left(tempStr, Len(tempStr) - 1)
+                                macroWs.Cells(subRowNo, 29).Value = tempStr
+                            End If
+                            
+                            
+                    
+                            subRowNo = subRowNo + 1
+                        End If
+                        
+                    Next rowNo
+                    tempStr = "CIQ_kddi_" & mrbtsID & "_" & Uniques.Item(index) & "_" & additionalFileIndex & "_ADDITION_" & Mid(tempArray(0), 5) & ".xlsx"
+                    
+                    Set macroWs = macrowb.Sheets("srbts")
+                    If (InStr(tempStr, "GSID1") > 0) Then
+                    macroWs.Cells(2, 4).Value = "FALSE"
+                    Else
+                    macroWs.Cells(2, 4).Value = "TRUE"
+                    End If
+                    Set macroWs = macrowb.Sheets("nrcel_Additional")
+                    
+                    additionalFileIndex = additionalFileIndex + 1
+                    Set tempWB = Workbooks.Add
+                   ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel_Additional")).Copy _
+                     After:=tempWB.Sheets(tempWB.Sheets.count)
+                     tempWB.Sheets("nrcel_Additional").Name = "nrcel"
+                     tempWB.Sheets("nrbts").Columns("O").Delete
+                    tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+            :=xlOpenXMLWorkbook, CreateBackup:=False
+                    Set tempSheet = tempWB.Sheets("History_")
+                    tempSheet.Buttons.Delete
+                    tempWB.Sheets("Sheet1").Delete
+                    tempWB.Close SaveChanges:=True
+                    
+                    macroWs.Columns("A").Replace What:="Addition", Replacement:="Existing", LookAt:=xlPart, SearchOrder:=xlByRows, MatchCase:=False, _
+                            SearchFormat:=False, _
+                            ReplaceFormat:=False
+                Next index
+               
+            Next sheetName
+        
+        ElseIf InStr(siteType, "CRAN") Then
+        
+            Dim inputMessage As String
+            Dim itrCount As Integer
+            Dim reqSiteOrder As String
+            Dim siteArray() As String
+            Dim site35, site37, site40, site28, site700 As Integer
+            Dim subFileName As String
+            subFileName = "noSite"
+            inputMessage = "Please provide the sites in the required order separated by commas(,)" & vbCrLf
+            site35 = 1
+            site37 = 1
+            site40 = 1
+            site28 = 1
+            site700 = 1
+            
+            itrCount = 1
+                For Each keyName In siteSheetMap.Keys
+                    inputMessage = inputMessage & itrCount & ". " & keyName & vbCrLf
+                    itrCount = itrCount + 1
+                Next keyName
+             reqSiteOrder = InputBox(inputMessage)
+             siteArray = Split(reqSiteOrder, ",")
+             subRowNo = 2
+             'Dim startIndex, endIndex As Integer
+             
+             For Each reqSiteName In siteArray
+                sheetName = siteSheetMap(Trim(reqSiteName))
+               Set ws = inputWb.Sheets(sheetName)
+               tempArray = Split(reqSiteName, "_")
+                startIndex = 0
+                endIndex = 0
+                reqSiteName = tempArray(1)
+                startIndex = searchColumn(Trim(reqSiteName), ws, 7, "down")
+                endIndex = searchColumn(Trim(reqSiteName), ws, 7, "up")
+                RowCount = ws.Cells(Rows.count, "A").End(xlUp).Row
+                
+                For rowNo = startIndex To endIndex
+                    macroWs.Cells(subRowNo, 1).Value = "Addition"
+                    macroWs.Cells(subRowNo, 2).Value = "MRBTS_" & mrbtsID
+                    macroWs.Cells(subRowNo, 3).Value = mrbtsID
+                    macroWs.Cells(subRowNo, 4).Value = subRowNo - 1
+                    macroWs.Cells(subRowNo, 5).Value = ws.Cells(rowNo, 6).Value
+                    tempStr = ws.Cells(rowNo, 8).Value
+                    If (InStr(tempStr, "3.5G") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N3500"
+                    ElseIf (InStr(tempStr, "3.7G") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N3700"
+                    ElseIf (InStr(tempStr, "4.0G") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N4000"
+                    ElseIf (InStr(tempStr, "28G") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N257"
+                    ElseIf (InStr(tempStr, "700M") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N700"
+                    ElseIf (InStr(tempStr, "2.3G") > 0) Then
+                        macroWs.Cells(subRowNo, 6).Value = "N2300"
+                    End If
+                    
+                                       
+                    If (InStr(tempStr, "40M") > 0) Then
+                        macroWs.Cells(subRowNo, 9).Value = "40"
+                    ElseIf (InStr(tempStr, "100M") > 0) Then
+                        macroWs.Cells(subRowNo, 9).Value = "100"
+                    ElseIf (InStr(tempStr, "10M") > 0) Then
+                        macroWs.Cells(subRowNo, 9).Value = "10"
+                    End If
+                    
+                    macroWs.Cells(subRowNo, 11).Value = 54
+                    macroWs.Cells(subRowNo, 12).Value = 440
+                    macroWs.Cells(subRowNo, 7).Value = ws.Cells(rowNo, 23).Value
+                    macroWs.Cells(subRowNo, 8).Value = ws.Cells(rowNo, 37).Value
+                    macroWs.Cells(subRowNo, 10).Value = ws.Cells(rowNo, 36).Value
+                    If ws.Cells(rowNo, 39).Value = "-" Then
+                    Else
+                        macroWs.Cells(subRowNo, 13).Value = ws.Cells(rowNo, 39).Value
+                    End If
+                    
+                                       
+                    Set SubUniques = GetUniqueValues(ws.Range("AU" & rowNo & ":AZ" & rowNo).Value)
+                    tempStr = ""
+                    For SubIndex = 1 To ((SubUniques.count) - 1)
+                        If (SubUniques.Item(SubIndex) <> "") Then
+                            tempStr = tempStr & SubUniques.Item(SubIndex) & "/"
+                        End If
+                    Next SubIndex
+                    
+                    If SubUniques.count <> 0 Then
+                        tempStr = tempStr & SubUniques.Item(SubUniques.count)
+                    End If
+                    If tempStr = "-" Then
+                       tempStr = ""
+                    End If
+                    macroWs.Cells(subRowNo, 14).Value = tempStr
+                    
+                      If macroWs.Cells(subRowNo, 6).Value = "N257" Then
+                        macroWs.Cells(subRowNo, 15).Value = "1.25"
+                      Else
+                        macroWs.Cells(subRowNo, 15).Value = ws.Cells(rowNo, 38).Value
+                      End If
+                            
+                    macroWs.Cells(subRowNo, 16).Value = ws.Cells(rowNo, 42).Value
+                    macroWs.Cells(subRowNo, 17).Value = ws.Cells(rowNo, 20).Value
+                    macroWs.Cells(subRowNo, 18).Value = ws.Cells(rowNo, 22).Value
+                    
+                    If ws.Cells(rowNo, 44).Value = "N/A" Then
+                    macroWs.Cells(subRowNo, 19).Value = ws.Cells(rowNo, 21).Value
+                    Else
+                    macroWs.Cells(subRowNo, 19).Value = ws.Cells(rowNo, 44).Value
+                    End If
+                    
+                    macroWs.Cells(subRowNo, 20).Value = ws.Cells(rowNo, 43).Value
+                    macroWs.Cells(subRowNo, 21).Value = ws.Cells(rowNo, 46).Value
+                    macroWs.Cells(subRowNo, 22).Value = ws.Cells(rowNo, 45).Value
+                    macroWs.Cells(subRowNo, 23).Value = ws.Cells(rowNo, 41).Value
+                    macroWs.Cells(subRowNo, 24).Value = ws.Cells(rowNo, 40).Value
+                    macroWs.Cells(subRowNo, 31).Value = ws.Cells(rowNo, 19).Value
+                    macroWs.Cells(subRowNo, 30).Value = ws.Cells(rowNo, 18).Value
+                    macroWs.Cells(subRowNo, 27).Value = ws.Cells(rowNo, 11).Value
+                    
+                    tempStr = ws.Cells(rowNo, 27).Value
+                    tempStr = RemoveWhiteSpace(tempStr)
+                    tempStr = Left(tempStr, Len(tempStr) - 1)
+                    macroWs.Cells(subRowNo, 29).Value = tempStr
+                    
+                    macroWs.Cells(subRowNo, 32).Value = ws.Cells(rowNo, 7).Value
+                    
+                    If ws.Cells(rowNo, 30).Value = SATStr9 Then
+                            macroWs.Cells(subRowNo, 33).Value = "standard"
+                     Else
+                            macroWs.Cells(subRowNo, 33).Value = ""
+                    End If
+                    
+                    If ws.Cells(rowNo, 25).Value = SATStr1 Then
+                        macroWs.Cells(subRowNo, 25).Value = SATStr5
+                    ElseIf ws.Cells(rowNo, 25).Value = SATStr2 Then
+                        macroWs.Cells(subRowNo, 25).Value = SATStr6
+                    ElseIf ws.Cells(rowNo, 25).Value = SATStr3 Then
+                        macroWs.Cells(subRowNo, 25).Value = SATStr7
+                    ElseIf ws.Cells(rowNo, 25).Value = SATStr4 Then
+                        macroWs.Cells(subRowNo, 25).Value = SATStr8
+                    Else
+                        macroWs.Cells(subRowNo, 25).Value = ""
+                    End If
+                          
+                    Set SubUniques = GetUniqueValues(ws.Range("BB" & rowNo & ":BH" & rowNo).Value)
+                    tempStr = ""
+                    For SubIndex = 1 To ((SubUniques.count) - 1)
+                        If (SubUniques.Item(SubIndex) <> "") Then
+                            tempStr = tempStr & SubUniques.Item(SubIndex) & "/"
+                        End If
+                    Next SubIndex
+                    
+                    If SubUniques.count <> 0 Then
+                        tempStr = tempStr & SubUniques.Item(SubUniques.count)
+                    End If
+                    
+                    If tempStr = "-" Then
+                       tempStr = ""
+                    End If
+            
+                    
+                    macroWs.Cells(subRowNo, 26).Value = tempStr
+                    
+                    'macroWs.Cells(subRowNo, 28).Value = ws.Cells(rowNo, 11).Value
+                   
+                    If (moranStr = CStr(ws.Cells(rowNo, 26).Value)) Then
+                        macroWs.Cells(subRowNo, 28).Value = "FALSE"
+                    Else
+                        macroWs.Cells(subRowNo, 28).Value = "TRUE"
+                    End If
+                    
+                    tempStr = ws.Cells(rowNo, 27).Value
+                    tempStr = RemoveWhiteSpace(tempStr)
+                    tempStr = Left(tempStr, Len(tempStr) - 1)
+                    macroWs.Cells(subRowNo, 29).Value = tempStr
+                    
+                    subRowNo = subRowNo + 1
+                    
+                Next rowNo
+                
+                If (InStr(sheetName, "3.5G") > 0) Then
+                    subFileName = "3.5G_GSID" & site35
+                    site35 = site35 + 1
+                ElseIf (InStr(sheetName, "3.7G") > 0) Then
+                    subFileName = "3.7G_GSID" & site37
+                    site37 = site37 + 1
+                ElseIf (InStr(sheetName, "4.0G") > 0) Then
+                    subFileName = "4.0G_GSID" & site40
+                    site40 = site40 + 1
+                ElseIf (InStr(sheetName, "28G") > 0) Then
+                    subFileName = "28G_GSID" & site28
+                    site28 = site28 + 1
+                ElseIf (InStr(sheetName, "700M") > 0) Then
+                    subFileName = "700M_GSID" & site700
+                    site700 = site700 + 1
+                End If
+                
+                tempStr = "CIQ_kddi_" & mrbtsID & "_" & subFileName & "_" & reqSiteName & "_ADDITION.xlsx"
+                
+                Set macroWs = macrowb.Sheets("srbts")
+                If (InStr(tempStr, "GSID1") > 0) Then
+                macroWs.Cells(2, 4).Value = "FALSE"
+                Else
+                macroWs.Cells(2, 4).Value = "TRUE"
+                End If
+                Set macroWs = macrowb.Sheets("nrcel_Additional")
+
+                additionalFileIndex = additionalFileIndex + 1
+                Set tempWB = Workbooks.Add
+               ThisWorkbook.Worksheets(Array("History_", "site", "srbts", "nrbts", "nrcel_Additional")).Copy _
+                 After:=tempWB.Sheets(tempWB.Sheets.count)
+                 tempWB.Sheets("nrcel_Additional").Name = "nrcel"
+                 tempWB.Sheets("nrbts").Columns("O").Delete
+                tempWB.SaveAs Filename:=currentDir & "/Modified/" & SiteNM & "/" & tempStr, FileFormat _
+        :=xlOpenXMLWorkbook, CreateBackup:=False
+                Set tempSheet = tempWB.Sheets("History_")
+                tempSheet.Buttons.Delete
+                tempWB.Sheets("Sheet1").Delete
+                tempWB.Close SaveChanges:=True
+                macroWs.Columns("A").Replace What:="Addition", Replacement:="Existing", LookAt:=xlPart, SearchOrder:=xlByRows, MatchCase:=False, _
+                            SearchFormat:=False, _
+                            ReplaceFormat:=False
+               
+            Next reqSiteName
+             
+            
+        End If
+        
+        
+        
+    Else
+        MsgBox "Please make sure only Input file and macro are present in the folder " & oFolder & ". Remove other files"
+        Exit Sub
+    End If
+    
+    MsgBox SiteNM & "-Done!"
+    'Workbooks.Close (currentDir & "/" & inputFileName)
+    
+End Sub
+
+Public Function GetUniqueValues(ByVal values As Variant) As Collection
+    Dim result As Collection
+    Dim cellValue As Variant
+    Dim cellValueTrimmed As String
+    Dim count As Integer
+    
+
+    Set result = New Collection
+    Set GetUniqueValues = result
+    count = 0
+    
+    
+    On Error Resume Next
+    For Each cellValue In values
+        count = count + 1
+    Next cellValue
+    If count = 1 Or count = 0 Then
+        cellValueTrimmed = Trim(values)
+        result.Add cellValueTrimmed, cellValueTrimmed
+    Else
+        For Each cellValue In values
+        cellValueTrimmed = Trim(cellValue)
+        If cellValueTrimmed = "" Then GoTo NextValue
+            result.Add cellValueTrimmed, cellValueTrimmed
+NextValue:
+        Next cellValue
+    End If
+        
+
+    On Error GoTo 0
+End Function
+
+Function searchColumn(ByVal searchWord As String, ByRef sheetName As Worksheet, ByVal index As Integer, ByVal direction As String)
+  Dim RowFound As Integer
+  
+  
+  On Error GoTo ErrorHandler
+  If InStr(direction, "up") > 0 Then
+    RowFound = sheetName.Columns(index).Find(What:=searchWord, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False, SearchFormat:=False).Row
+  Else
+    RowFound = sheetName.Columns(index).Find(What:=searchWord, LookAt:=xlWhole, SearchDirection:=xlNext, MatchCase:=False, SearchFormat:=False).Row
+  End If
+  searchColumn = RowFound
+  Exit Function
+  
+ErrorHandler:
+  RowFound = 0
+  
+End Function
+Function RemoveWhiteSpace(ByVal target As String) As String
+    With New RegExp
+        .Pattern = "\s"
+        .MultiLine = True
+        .Global = True
+        RemoveWhiteSpace = .Replace(target, vbNullString)
+    End With
+End Function
+
+
