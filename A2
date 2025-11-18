@@ -47,7 +47,7 @@ root.minsize(800, 500)
 
 # Overall theme colors
 BG_COLOR = "#f2f4f7"
-CARD_COLOR = "#ffffff"
+CARD_COLOR = "#eef6fb"
 ACCENT = "#2b6cb0"
 
 root.configure(bg=BG_COLOR)
