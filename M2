@@ -1,0 +1,88 @@
+Public Mac
+Sub Main()
+Dim oFolder, oFiles, oFile
+Dim wkSht As Worksheet
+
+OrgDir = Application.ActiveWorkbook.Path
+MacNm = ActiveWorkbook.Name
+Set Mac = Workbooks(MacNm)
+SRows = Mac.Sheets("History_").Cells(Rows.count, "A").End(xlUp).Row
+
+Delete OrgDir
+
+Folder_Del OrgDir
+
+ For G = 2 To SRows
+    SiteNM = Trim(Mac.Sheets("History_").Range("A" & G).Value)
+    
+    Sht_Clear
+    
+    Create_Fol OrgDir, SiteNM
+    
+    Set oFSO = CreateObject("Scripting.FileSystemObject")
+    Set oFolder = oFSO.GetFolder(OrgDir)
+    
+    Set oFiles = oFolder.Files
+    fileCount = oFiles.count
+    
+    xlsxFileCount = 0
+        
+    For Each oFile In oFiles
+        tempName = oFile.Name
+      
+      If (InStr(Right(tempName, 5), ".xlsx") > 0) Then
+            xlsxFileCount = xlsxFileCount + 1
+            inputFileName = tempName
+      End If
+    Next
+    
+    If xlsxFileCount = 0 Then
+        MsgBox "Please make sure Input file is present in the folder " & oFolder
+        Exit Sub
+        ElseIf xlsxFileCount >= 1 Then
+           Set inputWb = Workbooks.Open(OrgDir & "/" & inputFileName)
+            
+            For Each wkSht In Worksheets
+                Shtnm = wkSht.Name
+                Sheets(Shtnm).Select
+                CSRows = Cells(Rows.count, "A").End(xlUp).Row
+                  If (Shtnm = "Site" Or Shtnm = "Cell" And CSRows > 3) Then
+                    For M = 2 To CSRows
+                       If (Shtnm = "Site") Then
+                         Csn = Trim(Range("O" & M).Value)
+                           Else
+                             Csn = Trim(Range("I" & M).Value)
+                       End If
+                       
+                         If (SiteNM <> Csn And Csn <> "") Then
+                            Rows(M & ":" & M).Select
+                            Selection.Delete Shift:=xlUp
+                            M = M - 1
+                            Csn = ""
+                         End If
+                    Next
+                   
+                  End If
+            Next wkSht
+           
+    End If
+    
+    ActiveWorkbook.SaveAs Filename:=OrgDir & "/Raw/5GGlobal_Work.xlsx"
+    ActiveWorkbook.Close
+    ciq_datamap_main SiteNM
+    Windows("5GGlobal_Work.xlsx").Close
+    
+    Delete (OrgDir)
+    
+ Next
+ 
+ Sht_Clear
+ 
+ Mac.Activate
+ Sheets("History_").Select
+ 
+ MsgBox "5G_CIQ_Preparation COmpleted", vbOKOnly
+
+End Sub
+
+
