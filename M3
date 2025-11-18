@@ -1,0 +1,105 @@
+Sub Delete(OrgDir)
+Dim MyFolder As String
+Dim MyFile As String
+
+MyFolder = OrgDir & "\Raw"
+MyFile = Dir(MyFolder & "\*.xlsx")
+Do While MyFile <> ""
+    Kill MyFolder & "\*.*"
+    MyFile = Dir(MyFolder & "\*.xlsx")
+Loop
+End Sub
+Sub Create_Fol(OrgDir, SiteNM)
+
+'FileNameFolder = OrgDir & "\Modified\" & strDate & "\"
+
+FileNameSi = OrgDir & "\Modified\" & SiteNM & "\"
+
+MkDir FileNameSi
+
+'Getpa = strDate & "\" & SiteNM
+
+
+End Sub
+Sub Folder_Del(OrgDir)
+
+Dim fso As Object
+Dim folder 'As String
+Dim f
+Dim Name As String
+
+On Error Resume Next
+
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set folder = fso.GetFolder(OrgDir & "\Modified")  '<-- edit path as required to match your machine
+
+For Each f In folder.Files
+   On Error Resume Next
+   Name = f.Name
+   f.Delete True
+
+   On Error GoTo 0
+Next
+
+
+For Each f In folder.SubFolders
+   On Error Resume Next
+   Name = f.Name
+   f.Delete True
+   
+   On Error GoTo 0
+Next
+
+'folder.Delete
+End Sub
+Sub Sht_Clear()
+Dim wkSht As Worksheet
+
+Mac.Activate
+For Each wkSht In Worksheets
+    Dsn = wkSht.Name
+    Sheets(Dsn).Select
+      If (Dsn <> "tempSheet" And Dsn <> "History_" And Dsn <> "TestData") Then
+         
+         If (Dsn = "site" Or Dsn = "nrbts") Then
+            ADRows = Cells(Rows.count, "A").End(xlUp).Row
+            If (ADRows > 1) Then
+               Rows("2:" & ADRows).Clear
+            End If
+            ADRows = ""
+            
+           ElseIf (Dsn = "srbts") Then
+             ADRows = Cells(Rows.count, "A").End(xlUp).Row
+             If (ADRows > 1) Then
+               Range("A2:C" & ADRows).Clear
+               Range("F2:I" & ADRows).Clear
+             End If
+             
+            ADRows = ""
+            
+           ElseIf (Dsn = "nrcel") Then
+             BDRows = Cells(Rows.count, "B").End(xlUp).Row
+             If (BDRows > 1) Then
+               Range("B2:C" & BDRows).Clear
+               Range("L2:AB" & BDRows).Clear
+             End If
+            BDRows = ""
+            
+            ElseIf (Dsn = "nrcel_Additional") Then
+             BDRows = Cells(Rows.count, "B").End(xlUp).Row
+             If (BDRows > 1) Then
+               Range("A2:AG" & BDRows).Clear
+             End If
+            BDRows = ""
+            
+         End If
+      
+      End If
+    
+Next wkSht
+
+
+End Sub
+
+
+
