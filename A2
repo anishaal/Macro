@@ -1,11 +1,13 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
+from tkinter import ttk
 import win32com.client as win32
 import os
 
 EXCEL_FILE = r"C:\Path\YourMacroWorkbook.xlsm"  # <-- change this
-MACRO_NAME = "YourMacroName"                    # <-- change this
+MACRO_NAME = "YourMacroName"                      # <-- change this
 
+# -------------------- Run Macro Function --------------------
 def run_macro():
     site_id = entry.get().strip()
 
@@ -21,10 +23,12 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Visible = False  # run in background
+        excel.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
-        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}", site_id)
+
+        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
+
         wb.Close(SaveChanges=True)
         excel.Quit()
 
@@ -33,33 +37,58 @@ def run_macro():
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
 
-# UI Setup
+# -------------------- UI Setup --------------------
 root = tk.Tk()
-root.title("Site Macro Runner")
-root.geometry("370x200")
-root.resizable(False, False)
+root.title("Site Macro Runner - Professional UI")
 
-root.configure(bg="#f2f7fa")
-style = ttk.Style()
-style.theme_use("clam")
-style.configure("TButton", font=("Segoe UI", 12), background="#468cf4", foreground="#fff", borderwidth=0)
-style.map("TButton", background=[("active", "#3773c0")])
-style.configure("TEntry", font=("Segoe UI", 12), padding=4)
-style.configure("TLabel", font=("Segoe UI", 13, "bold"), background="#f2f7fa", foreground="#444")
+# Start maximized
+root.state('zoomed')
+root.minsize(800, 500)
 
-label = ttk.Label(root, text="Enter Site ID:")
-label.pack(pady=(18, 8))
+# Overall theme colors
+BG_COLOR = "#f2f4f7"
+CARD_COLOR = "#ffffff"
+ACCENT = "#2b6cb0"
 
-frame = tk.Frame(root, bg="#f2f7fa")
-frame.pack()
+root.configure(bg=BG_COLOR)
 
-entry = ttk.Entry(frame, width=28)
-entry.pack(ipady=4)
+# -------------------- Title Bar --------------------
+title_label = tk.Label(root, text="Site Macro Runner", font=("Segoe UI", 22, "bold"), bg=BG_COLOR, fg="#1a365d")
+title_label.pack(pady=20)
 
-run_button = ttk.Button(root, text="Run Macro", command=run_macro)
-run_button.pack(pady=18, ipady=4, ipadx=8)
+# -------------------- Main Card --------------------
+card = tk.Frame(root, bg=CARD_COLOR, bd=2, relief="groove")
+card.pack(pady=40, padx=40, fill="x")
 
-# Add rounded corner effect for entry widget (Windows only via visual illusion)
-entry.configure(style="TEntry")
+inner = tk.Frame(card, bg=CARD_COLOR)
+inner.pack(pady=30)
+
+label = tk.Label(inner, text="Enter Site ID", font=("Segoe UI", 14, "bold"), bg=CARD_COLOR)
+label.grid(row=0, column=0, pady=10)
+
+# Styled Entry
+e_style = ttk.Style()
+e_style.configure("TEntry", padding=6, font=("Segoe UI", 13))
+entry = ttk.Entry(inner, width=40, style="TEntry")
+entry.grid(row=1, column=0, padx=10, pady=10)
+
+# Styled Run Button
+b_style = ttk.Style()
+b_style.configure("Accent.TButton", font=("Segoe UI", 14, "bold"))
+
+run_button = ttk.Button(inner, text="Run Macro", style="Accent.TButton", command=run_macro)
+run_button.grid(row=2, column=0, pady=25)
+
+# -------------------- Footer --------------------
+footer = tk.Frame(root, bg=BG_COLOR)
+footer.pack(side="bottom", fill="x", pady=10)
+
+footer_label = tk.Label(footer, text="All credits reserved © 2025", font=("Segoe UI", 11), bg=BG_COLOR, fg="#4a5568")
+footer_label.pack(side="left", padx=20)
+
+# Placeholder for logo on right (update the path when available)
+# logo_img = tk.PhotoImage(file=r"C:\Path\YourLogo.png")
+# logo_label = tk.Label(footer, image=logo_img, bg=BG_COLOR)
+# logo_label.pack(side="right", padx=20)
 
 root.mainloop()
