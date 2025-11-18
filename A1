@@ -26,7 +26,7 @@ def run_macro():
         wb = excel.Workbooks.Open(EXCEL_FILE)
 
         # Pass Site ID to the macro
-        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}", site_id)
+        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
 
         wb.Close(SaveChanges=True)
         excel.Quit()
