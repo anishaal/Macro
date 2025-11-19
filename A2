@@ -23,11 +23,17 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Application.Visible = False
+        excel.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
-        wb.worksheets("History_").Range("A2").Value = site_id
+
+        # ---- WRITE YOUR INPUT INTO A2 BEFORE RUNNING MACRO ----
+        ws = wb.Worksheets("Input")         # <--- CHANGE if sheet name different
+        ws.Range("A2").Value = site_id      # <--- macro reads from A2
+
+        # ---- RUN THE MACRO ----
         excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
+
         wb.Close(SaveChanges=True)
         excel.Quit()
 
@@ -35,6 +41,7 @@ def run_macro():
 
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
+
 
 # -------------------- UI Setup --------------------
 root = tk.Tk()
