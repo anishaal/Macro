@@ -23,12 +23,12 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Visible = False
+        excel.Visible = True
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
 
         # ---- WRITE YOUR INPUT INTO A2 BEFORE RUNNING MACRO ----
-        ws = wb.Worksheets("Input")         # <--- CHANGE if sheet name different
+        ws = wb.Worksheets("History_")         # <--- CHANGE if sheet name different
         ws.Range("A2").Value = site_id      # <--- macro reads from A2
 
         # ---- RUN THE MACRO ----
