@@ -23,9 +23,10 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Visible = False
+        excel.Application.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
+        wb.worksheets("History_").Range("A2").Value = site_id
         excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
         wb.Close(SaveChanges=True)
         excel.Quit()
@@ -37,7 +38,7 @@ def run_macro():
 
 # -------------------- UI Setup --------------------
 root = tk.Tk()
-root.title("Site Macro Runner - Professional UI")
+root.title("Auto CIQ Generator")
 
 # Start maximized
 root.state('zoomed')
@@ -57,7 +58,7 @@ header.pack(fill="x")
 
 header_label = tk.Label(
     header,
-    text="Site Macro Runner",
+    text="Auto CIQ Generator",
     font=("Segoe UI", 22, "bold"),
     bg=HEADER_COLOR,
     fg="white"
