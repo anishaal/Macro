@@ -5,7 +5,7 @@ import win32com.client as win32
 import os
 
 EXCEL_FILE = r"C:\Users\anisl\Downloads\25R1_NR_12112025 1\25R1_NR_12112025\5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"   # <-- change this
-MACRO_NAME = "Main"                     # <-- change this
+MACRO_NAME = "Module2.Main"     # <-- IMPORTANT: use ModuleName.Main
 
 # -------------------- Run Macro Function --------------------
 def run_macro():
@@ -26,7 +26,10 @@ def run_macro():
         excel.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
-        excel.Application.Run(f"'{wb.Name}'!Main")
+
+        # The correct macro call (module-qualified)
+        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
+
         wb.Close(SaveChanges=True)
         excel.Quit()
 
@@ -44,10 +47,10 @@ root.state('zoomed')
 root.minsize(800, 500)
 
 # New theme colors
-BG_COLOR = "#e8ebf2"          # window background
-HEADER_COLOR = "#2d4d7c"      # deep blue header
-FOOTER_COLOR = "#1e2f47"      # darker footer
-CARD_COLOR = "#f7faff"        # soft card background
+BG_COLOR = "#e8ebf2"
+HEADER_COLOR = "#2d4d7c"
+FOOTER_COLOR = "#1e2f47"
+CARD_COLOR = "#f7faff"
 
 root.configure(bg=BG_COLOR)
 
@@ -82,9 +85,9 @@ e_style.configure("TEntry", padding=6, font=("Segoe UI", 13))
 entry = ttk.Entry(inner, width=40, style="TEntry")
 entry.grid(row=1, column=0, padx=10, pady=10)
 
-# -------------------- Button Style Fix (Fully Working) --------------------
+# -------------------- Button Style Fix --------------------
 b_style = ttk.Style()
-b_style.theme_use("clam")  # IMPORTANT: allows custom colors
+b_style.theme_use("clam")
 
 b_style.configure(
     "Accent.TButton",
@@ -100,7 +103,6 @@ b_style.map(
     foreground=[("disabled", "#bbbbbb"), ("!disabled", "white")]
 )
 
-# Button
 run_button = ttk.Button(inner, text="Run Macro",
                         style="Accent.TButton",
                         command=run_macro)
