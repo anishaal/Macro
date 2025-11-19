@@ -4,9 +4,8 @@ from tkinter import ttk
 import win32com.client as win32
 import os
 
-EXCEL_FILE = r"C:\Users\anisl\Downloads\25R1_NR_12112025 1\25R1_NR_12112025\5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"
+EXCEL_FILE = r"C:\Users\anisl\Downloads\25R1_NR_12112025 1\25R1_NR_12112025\Copy of 5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"
 MACRO_NAME = "Main"
-
 
 # -------------------- Run Macro Function --------------------
 def run_macro():
@@ -24,17 +23,10 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Visible = True  # Show Excel window
+        excel.Application.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
-
-        # ---- WRITE SITE ID INTO CELL A2 BEFORE RUNNING MACRO ----
-        ws = wb.Worksheets("History_")      # Change worksheet name if needed
-        ws.Range("A2").Value = site_id      # Macro will read this input
-
-        # ---- RUN THE MACRO ----
         excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
-
         wb.Close(SaveChanges=True)
         excel.Quit()
 
@@ -43,23 +35,21 @@ def run_macro():
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
 
-
 # -------------------- UI Setup --------------------
 root = tk.Tk()
 root.title("Auto CIQ Generator")
 
 # Start maximized
-root.state("zoomed")
+root.state('zoomed')
 root.minsize(800, 500)
 
-# Theme colors
-BG_COLOR = "#e8ebf2"
-HEADER_COLOR = "#2d4d7c"
-FOOTER_COLOR = "#1e2f47"
-CARD_COLOR = "#f7faff"
+# New theme colors
+BG_COLOR = "#e8ebf2"          # window background
+HEADER_COLOR = "#2d4d7c"      # deep blue header
+FOOTER_COLOR = "#1e2f47"      # darker footer
+CARD_COLOR = "#f7faff"        # soft card background
 
 root.configure(bg=BG_COLOR)
-
 
 # -------------------- Header --------------------
 header = tk.Frame(root, bg=HEADER_COLOR, height=70)
@@ -74,7 +64,6 @@ header_label = tk.Label(
 )
 header_label.pack(pady=15)
 
-
 # -------------------- Main Card --------------------
 card = tk.Frame(root, bg=CARD_COLOR, bd=2, relief="groove")
 card.pack(pady=40, padx=40, fill="x")
@@ -82,25 +71,20 @@ card.pack(pady=40, padx=40, fill="x")
 inner = tk.Frame(card, bg=CARD_COLOR)
 inner.pack(pady=30)
 
-label = tk.Label(
-    inner,
-    text="Enter Site ID",
-    font=("Segoe UI", 14, "bold"),
-    bg=CARD_COLOR
-)
+label = tk.Label(inner, text="Enter Site ID",
+                 font=("Segoe UI", 14, "bold"),
+                 bg=CARD_COLOR)
 label.grid(row=0, column=0, pady=10)
 
-# Entry style
+# Styled Entry
 e_style = ttk.Style()
 e_style.configure("TEntry", padding=6, font=("Segoe UI", 13))
-
 entry = ttk.Entry(inner, width=40, style="TEntry")
 entry.grid(row=1, column=0, padx=10, pady=10)
 
-
-# -------------------- Button Styling --------------------
+# -------------------- Button Style Fix (Fully Working) --------------------
 b_style = ttk.Style()
-b_style.theme_use("clam")  # Required to allow custom button colors
+b_style.theme_use("clam")  # IMPORTANT: allows custom colors
 
 b_style.configure(
     "Accent.TButton",
@@ -116,16 +100,11 @@ b_style.map(
     foreground=[("disabled", "#bbbbbb"), ("!disabled", "white")]
 )
 
-
-# Run Macro Button
-run_button = ttk.Button(
-    inner,
-    text="Run Macro",
-    style="Accent.TButton",
-    command=run_macro
-)
+# Button
+run_button = ttk.Button(inner, text="Run Macro",
+                        style="Accent.TButton",
+                        command=run_macro)
 run_button.grid(row=2, column=0, pady=25)
-
 
 # -------------------- Footer --------------------
 footer = tk.Frame(root, bg=FOOTER_COLOR, height=50)
@@ -140,6 +119,4 @@ footer_label = tk.Label(
 )
 footer_label.pack(side="left", padx=20)
 
-
-# -------------------- Start App --------------------
 root.mainloop()
