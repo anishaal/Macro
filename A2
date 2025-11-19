@@ -4,8 +4,8 @@ from tkinter import ttk
 import win32com.client as win32
 import os
 
-EXCEL_FILE = r"C:\Path\YourMacroWorkbook.xlsm"   # <-- change this
-MACRO_NAME = "YourMacroName"                     # <-- change this
+EXCEL_FILE = r"C:\Users\anisl\Downloads\25R1_NR_12112025 1\25R1_NR_12112025\5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"   # <-- change this
+MACRO_NAME = "Main"                     # <-- change this
 
 # -------------------- Run Macro Function --------------------
 def run_macro():
@@ -26,7 +26,7 @@ def run_macro():
         excel.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
-        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
+        excel.Application.Run(f"'{wb.Name}'!Main")
         wb.Close(SaveChanges=True)
         excel.Quit()
 
