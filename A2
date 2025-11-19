@@ -4,8 +4,8 @@ from tkinter import ttk
 import win32com.client as win32
 import os
 
-EXCEL_FILE = r"C:\Users\anisl\Downloads\25R1_NR_12112025 1\25R1_NR_12112025\Copy of 5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"
-MACRO_NAME = "Main"
+EXCEL_FILE = r"C:\Path\YourMacroWorkbook.xlsm"   # <-- change this
+MACRO_NAME = "YourMacroName"                     # <-- change this
 
 # -------------------- Run Macro Function --------------------
 def run_macro():
@@ -23,7 +23,7 @@ def run_macro():
         messagebox.showinfo("Running", "Running macro, please wait...")
 
         excel = win32.Dispatch("Excel.Application")
-        excel.Application.Visible = False
+        excel.Visible = False
 
         wb = excel.Workbooks.Open(EXCEL_FILE)
         excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
@@ -37,7 +37,7 @@ def run_macro():
 
 # -------------------- UI Setup --------------------
 root = tk.Tk()
-root.title("Auto CIQ Generator")
+root.title("Site Macro Runner - Professional UI")
 
 # Start maximized
 root.state('zoomed')
@@ -57,7 +57,7 @@ header.pack(fill="x")
 
 header_label = tk.Label(
     header,
-    text="Auto CIQ Generator",
+    text="Site Macro Runner",
     font=("Segoe UI", 22, "bold"),
     bg=HEADER_COLOR,
     fg="white"
