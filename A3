@@ -1,0 +1,201 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+import win32com.client as win32
+import os
+from PIL import Image, ImageTk
+import sys
+
+
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+
+EXCEL_FILE_NAME = "5G_CIQ_DataMap_V1_Updated_TD_V4.xlsm"
+EXCEL_FILE = os.path.join(application_path, EXCEL_FILE_NAME)
+MACRO_NAME = "Module2.Main"
+
+
+def run_macro():
+    site_id = entry.get().strip()
+
+    if not site_id:
+        messagebox.showwarning("Input Error", "Please enter a Site ID.")
+        return
+
+    if not os.path.exists(EXCEL_FILE):
+        messagebox.showerror("File Error", "Excel macro file not found.")
+        return
+
+    try:
+        messagebox.showinfo("Running", "Running macro, please wait...")
+
+        excel = win32.Dispatch("Excel.Application")
+        excel.Visible = False
+
+        wb = excel.Workbooks.Open(EXCEL_FILE)
+        ws = wb.Sheets("History_")
+        ws.Range("A2").Value = site_id
+
+        excel.Application.Run(f"'{wb.Name}'!{MACRO_NAME}")
+
+        wb.Close(SaveChanges=True)
+        excel.Quit()
+
+        messagebox.showinfo("Success", "Script Executed successfully!")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred:\n{e}")
+
+
+
+root = tk.Tk()
+root.title("Auto CIQ Generator")
+root.state('zoomed')
+root.minsize(800, 600)
+
+current_dir = os.path.dirname(__file__)
+
+BG_COLOR = "#ffffff"
+HEADER_COLOR = "#005AFF"
+FOOTER_COLOR = "#005AFF"
+BORDER_COLOR = "#1a3a6e"
+
+root.configure(bg=BG_COLOR)
+
+header = tk.Frame(root, bg=HEADER_COLOR, height=70)
+header.pack(side="top", fill="x")
+
+header_label = tk.Label(
+    header,
+    text="Auto CIQ Generator",
+    font=("Segoe UI", 22, "bold"),
+    bg=HEADER_COLOR,
+    fg="white"
+)
+header_label.pack(pady=15)
+
+footer = tk.Frame(root, bg=FOOTER_COLOR, height=50)
+footer.pack(side="bottom", fill="x")
+footer.pack_propagate(False)
+
+footer_label = tk.Label(
+    footer,
+    text="All credits reserved © 2025",
+    font=("Segoe UI", 11),
+    bg=FOOTER_COLOR,
+    fg="white"
+)
+footer_label.pack(side="left", padx=50)
+
+
+main_frame = tk.Frame(root, bg=BG_COLOR)
+main_frame.pack(side="top", fill="both", expand=True, padx=0, pady=0)
+
+main_frame.columnconfigure(0, weight=1)
+main_frame.columnconfigure(1, weight=1)
+main_frame.rowconfigure(0, weight=1)
+
+left_frame = tk.Frame(main_frame, bg=BG_COLOR)
+left_frame.grid(row=0, column=0, sticky="nsew", padx=40, pady=20)
+
+left_frame.columnconfigure(0, weight=1)
+left_frame.rowconfigure(0, weight=1)
+
+container = tk.Frame(left_frame, bg=BG_COLOR)
+container.grid(row=0, column=0, sticky="nsew")
+container.columnconfigure(0, weight=1)
+container.rowconfigure(0, weight=0)
+container.rowconfigure(1, weight=0)
+container.rowconfigure(2, weight=0)
+container.rowconfigure(3, weight=1)
+
+logo_path = os.path.join(current_dir, 'assets', 'logo.png')
+logo_image = Image.open(logo_path)
+logo_image = logo_image.resize((100, 30))
+logo_photo = ImageTk.PhotoImage(logo_image)
+
+logo_label = tk.Label(container, image=logo_photo, bg=BG_COLOR)
+logo_label.grid(row=0, column=0, sticky="w", pady=(0, 20))
+logo_label.image = logo_photo
+
+form_frame = tk.Frame(container, bg=BG_COLOR)
+form_frame.grid(row=3, column=0, sticky="")
+
+label = tk.Label(
+    form_frame,
+    text="Enter Site ID",
+    font=("Segoe UI", 16, "bold"),
+    bg=BG_COLOR
+)
+label.pack(anchor="center", pady=(0, 10))
+
+style = ttk.Style()
+style.theme_use('default')
+
+style.configure("Attractive.TEntry",
+                fieldbackground="#E0E0E0",
+                font=("Segoe UI", 14),
+                padding=[10, 5]
+               )
+
+entry = ttk.Entry(form_frame, width=45, style="Attractive.TEntry")
+entry.pack(anchor="center", pady=10)
+
+style.configure("Custom.TButton",
+                foreground="white",
+                background="#4A148C",
+                font=("Segoe UI", 12, "bold"),
+                padding=6)
+style.map("Custom.TButton",
+          background=[('active', '#7D33F2'), ('!active', '#4A148C')])
+
+run_button = ttk.Button(form_frame, text="Execute", style="Custom.TButton", command=run_macro)
+run_button.pack(anchor="center", pady=30)
+
+
+right_frame = tk.Frame(main_frame, bg=BG_COLOR)
+right_frame.grid(row=0, column=1, sticky="nsew", padx=0, pady=0)
+
+right_frame.columnconfigure(0, weight=1)
+right_frame.rowconfigure(0, weight=1)
+
+image_path = os.path.join(current_dir, "assets", "image.jpg")
+original_img = Image.open(image_path)
+
+image_label = tk.Label(right_frame, bg=BG_COLOR)
+image_label.grid(row=0, column=0, sticky="nsew")
+
+def resize_image_cover(event=None):
+    frame_width = right_frame.winfo_width()
+    frame_height = right_frame.winfo_height()
+
+    if frame_width < 10 or frame_height < 10:
+        root.after(100, resize_image_cover)
+        return
+
+    img_ratio = original_img.width / original_img.height
+    frame_ratio = frame_width / frame_height
+
+    if frame_ratio > img_ratio:
+        new_width = frame_width
+        new_height = int(new_width / img_ratio)
+    else:
+        new_height = frame_height
+        new_width = int(new_height * img_ratio)
+
+    img_resized = original_img.resize((new_width, new_height), Image.LANCZOS)
+    img_tk = ImageTk.PhotoImage(img_resized)
+    image_label.config(image=img_tk)
+    image_label.image = img_tk
+
+    image_label.place(x=0, y=(frame_height - new_height) // 2)
+
+root.update_idletasks()
+resize_image_cover()
+right_frame.bind("<Configure>", lambda e: resize_image_cover())
+
+root.mainloop()
